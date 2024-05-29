@@ -1,67 +1,76 @@
-function getRandomChoice() {
-  let randomNumber = Math.floor(Math.random() * 3);
+let roundWinner = [];
+let buttons = document.querySelectorAll("button");
+console.log(buttons);
 
-  switch (randomNumber) {
-    case 0:
-      return "Rock";
-    case 1:
-      return "Paper";
-    case 2:
-      return "Scissors";
+let Score = document.getElementById("score");
+let pc = document.getElementById("pc");
+let user = document.getElementById("user");
+
+let computerChoice = function () {
+  const possibleChoices = ["Rock", "Paper", "Scissors"];
+  return possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
+};
+let reset = () => {
+  roundWinner = [];
+  Score.innerText = "Let's start!";
+  pc.innerText = 0;
+  user.innerText = 0;
+};
+
+let winner = function (computerChoice, playerChoice) {
+  console.log("The Id of the button we click on: ", playerChoice);
+  console.log("The result of the function computerChoice: ", computerChoice);
+  let playerChoiceInput = document.getElementById("player-choice");
+  let computerChoiceInput = document.getElementById("computer-choice");
+
+  playerChoiceInput.value = playerChoice;
+  computerChoiceInput.value = computerChoice;
+
+  if (
+    (computerChoice === "Rock" && playerChoice === "Paper") ||
+    (computerChoice === "Paper" && playerChoice === "Scissors") ||
+    (computerChoice === "Scissors" && playerChoice === "Rock")
+  ) {
+    roundWinner.push("Player");
+  } else if (
+    (computerChoice === "Rock" && playerChoice === "Scissors") ||
+    (computerChoice === "Paper" && playerChoice === "Rock") ||
+    (computerChoice === "Scissors" && playerChoice === "Paper")
+  ) {
+    roundWinner.push("Computer");
+  } else {
+    roundWinner.push("Tie");
   }
-}
-// console.log(getRandomChoice());
+};
 
-let computerScore = 0;
-let playerScore = 0;
-
-function playRound() {
-  // console.log("PLAY ROUND");
-  let computerChoice = getRandomChoice();
-  let playerChoice = getRandomChoice();
-
-  console.log(`Computer choice : ${computerChoice}`);
-  console.log(`Player Choice: ${playerChoice}`);
-
-  if (computerChoice === playerChoice) {
-    console.log("Tied round! Try again!");
-  } else if (computerChoice === "Rock" && playerChoice === "Paper") {
-    console.log("Paper beats Rock. Player Wins!");
-    playerScore++;
-  } else if (computerChoice === "Rock" && playerChoice === "Scissors") {
-    console.log("Rock beats Scissors! Computer Wins!");
-    computerScore++;
-  } else if (computerChoice === "Paper" && playerChoice === "Rock") {
-    console.log("Paper beats Rock! Computer Wins!");
-    computerScore++;
-  } else if (computerChoice === "Paper" && playerChoice === "Scissors") {
-    console.log("Scissors beats Paper. Player wins!");
-    playerScore++;
-  } else if (computerChoice === "Scissors" && playerChoice === "Rock") {
-    console.log("Rock beats Scissors. Player Wins!");
-    playerScore++;
-  } else if (computerChoice === "Scissors" && playerChoice === "Paper") {
-    console.log("Scissors beats Paper. Computer Wins");
-    computerScore++;
-  }
-}
-
-function playGame() {
-  // console.log("PLAY GAME");
-  for (let i = 0; i < 5; i++) {
-    setTimeout(playRound, 2000 * i);
-  }
-
-  setTimeout(() => {
-    // console.log("AFTER ROUNDS");
-    if (playerScore > computerScore) {
-      console.log("Player wins the game!");
-    } else if (playerScore < computerScore) {
-      console.log("Computer wins the game!");
-    } else {
-      console.log("Tie! Try again.");
+buttons.forEach((button) => {
+  button.addEventListener("click", function () {
+    if (this.id === "reset") {
+      return reset();
     }
-  }, 10_000);
-}
+    winner(computerChoice(), this.id);
+    console.log(roundWinner);
+    let computerWins =
+      roundWinner.filter((round) => round === "Computer").length === 3;
+    let computerWinsNr = roundWinner.filter(
+      (round) => round === "Computer"
+    ).length;
 
-playGame();
+    let playerWins =
+      roundWinner.filter((round) => round === "Player").length === 3;
+    let playerWinsNr = roundWinner.filter((round) => round === "Player").length;
+
+    if (computerWins) {
+      Score.innerText = "The computer Wins!";
+      console.log("The computer wins!");
+      roundWinner = [];
+    }
+    if (playerWins) {
+      Score.innerText = "The player Wins!";
+      console.log("The player wins!");
+      roundWinner = [];
+    }
+    pc.innerText = computerWinsNr;
+    user.innerText = playerWinsNr;
+  });
+});
